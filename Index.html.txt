@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fantle — The Sports Word Game</title>
+  <meta name="description" content="Fantle is the daily word game for sports fans. Guess the 5-letter sports word in 6 tries. Football, Basketball, Baseball, and Hockey — new puzzles every day.">
+  <meta name="theme-color" content="#0d1224">
+
+  <!-- Open Graph for social sharing -->
+
+  <meta property="og:title"       content="Fantle — The Sports Word Game">
+  <meta property="og:description" content="The daily word game built for sports fans. New puzzles every day across Football, Basketball, Baseball, and Hockey.">
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://fantle.app">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap');
+
+    /* ── RESET & BASE ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:    #C8A84B;
+      --gold-dk: #8a6e1a;
+      --navy:    #0d1224;
+      --mid:     #111830;
+      --surface: #1a2244;
+      --dgray:   #2e3d5a;
+      --lgray:   #8090b0;
+      --white:   #f0f4ff;
+      --green:   #4ade80;
+      --blue:    #2e86c1;
+      --red:     #f87171;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAVIGATION ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(13,18,36,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(200,168,75,0.15);
+      padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .nav-brand {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 26px; letter-spacing: 4px;
+      color: var(--gold);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex; gap: 24px; align-items: center;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13px; font-weight: 600; letter-spacing: 0.5px;
+      color: var(--lgray); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-cta {
+      background: linear-gradient(135deg, #B8972A, #E8C84B) !important;
+      color: #0a0e1a !important;
+      padding: 8px 18px; border-radius: 20px;
+      font-weight: 700 !important;
+    }
+
+    /* ── HERO ── */
+    #home {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 80px 24px 60px;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse at 50% 20%, rgba(200,168,75,0.10) 0%, transparent 60%),
+        linear-gradient(180deg, #0d1224 0%, #07091a 100%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(200,168,75,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,168,75,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .hero-glow {
+      position: absolute; top: -20%; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,168,75,0.08) 0%, transparent 70%);
+      z-index: 0;
+    }
+    .hero-content {
+      position: relative; z-index: 1;
+      text-align: center; max-width: 680px;
+    }
+    .hero-sports {
+      display: flex; justify-content: center; gap: 14px;
+      margin-bottom: 32px;
+    }
+    .hero-sports span {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: rgba(200,168,75,0.08);
+      border: 1px solid rgba(200,168,75,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      animation: float 3s ease-in-out infinite;
+    }
+    .hero-sports span:nth-child(2) { animation-delay: 0.3s; }
+    .hero-sports span:nth-child(3) { animation-delay: 0.6s; }
+    .hero-sports span:nth-child(4) { animation-delay: 0.9s; }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-6px); }
+    }
+
+    h1 {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(72px, 15vw, 110px);
+      letter-spacing: 8px; line-height: 0.9;
+      color: var(--gold);
+      text-shadow: 0 0 60px rgba(200,168,75,0.3);
+      margin-bottom: 8px;
+    }
+    .hero-sub {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(14px, 3vw, 18px);
+      letter-spacing: 6px; color: var(--dgray);
+      margin-bottom: 24px;
+    }
+    .hero-desc {
+      font-size: 18px; color: var(--lgray);
+      line-height: 1.7; margin-bottom: 40px;
+      max-width: 520px; margin-left: auto; margin-right: auto;
+    }
+    .hero-desc strong { color: var(--white); }
+
+    .hero-tiles {
+      display: flex; justify-content: center; gap: 8px;
+      margin-bottom: 48px;
+    }
+    .tile {
+      width: 50px; height: 50px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', cursive; font-size: 24px;
+      border: 2px solid transparent;
+      animation: tileReveal 0.4s ease forwards;
+      opacity: 0;
+    }
+    .tile.correct { background: linear-gradient(135deg,#B8972A,#E8C84B); color: #0a0e1a; border-color: #E8C84B; box-shadow: 0 0 16px rgba(200,168,75,0.4); animation-delay: 0.2s; }
+    .tile.present { background: linear-gradient(135deg,#1a5276,#2e86c1); color: #fff;    border-color: #2e86c1; box-shadow: 0 0 12px rgba(46,134,193,0.3); animation-delay: 0.4s; }
+    .tile.absent  { background: linear-gradient(135deg,#1a1f35,#252d4a); color: #5a6a8a; border-color: #252d4a; animation-delay: 0.6s; }
+    .tile.t4      { background: linear-gradient(135deg,#B8972A,#E8C84B); color: #0a0e1a; border-color: #E8C84B; box-shadow: 0 0 16px rgba(200,168,75,0.4); animation-delay: 0.8s; }
+    .tile.t5      { background: linear-gradient(135deg,#1a5276,#2e86c1); color: #fff;    border-color: #2e86c1; box-shadow: 0 0 12px rgba(46,134,193,0.3); animation-delay: 1.0s; }
+    @keyframes tileReveal {
+      0%   { opacity:0; transform: rotateX(90deg) scale(0.8); }
+      100% { opacity:1; transform: rotateX(0deg)  scale(1);   }
+    }
+
+    .cta-group {
+      display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #B8972A, #E8C84B);
+      color: #0a0e1a; font-weight: 700; font-size: 16px;
+      padding: 16px 36px; border-radius: 14px;
+      text-decoration: none; border: none; cursor: pointer;
+      box-shadow: 0 6px 0 #7a5e10, 0 8px 24px rgba(200,168,75,0.25);
+      transition: transform 0.1s, box-shadow 0.1s;
+      letter-spacing: 0.5px;
+    }
+    .btn-primary:hover  { transform: translateY(2px); box-shadow: 0 4px 0 #7a5e10; }
+    .btn-primary:active { transform: translateY(4px); box-shadow: 0 2px 0 #7a5e10; }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent;
+      color: var(--lgray); font-weight: 600; font-size: 15px;
+      padding: 16px 28px; border-radius: 14px;
+      text-decoration: none; border: 1px solid rgba(255,255,255,0.1);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+    .app-store-badge {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 10px 20px;
+      color: var(--lgray); font-size: 13px;
+    }
+
+    /* ── GOLD LINE ── */
+    .gold-line {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold) 70%, transparent);
+      opacity: 0.4;
+    }
+
+    /* ── FEATURES ── */
+    #features {
+      padding: 100px 24px;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .section-label {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 12px; letter-spacing: 4px; color: var(--gold);
+      text-align: center; margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(36px, 7vw, 54px);
+      letter-spacing: 3px; color: var(--white);
+      text-align: center; margin-bottom: 16px;
+    }
+    .section-body {
+      font-size: 17px; color: var(--lgray);
+      text-align: center; max-width: 520px;
+      margin: 0 auto 64px;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border: 1px solid rgba(200,168,75,0.12);
+      border-radius: 20px; padding: 32px 28px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .feature-card:hover {
+      border-color: rgba(200,168,75,0.3);
+      transform: translateY(-4px);
+    }
+    .feature-icon {
+      font-size: 36px; margin-bottom: 16px;
+      display: block;
+    }
+    .feature-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 22px; letter-spacing: 1px;
+      color: var(--gold); margin-bottom: 10px;
+    }
+    .feature-desc {
+      font-size: 15px; color: var(--lgray); line-height: 1.65;
+    }
+
+    /* ── HOW TO PLAY ── */
+    #how {
+      padding: 100px 24px;
+      background: linear-gradient(180deg, transparent, rgba(200,168,75,0.03), transparent);
+    }
+    .how-inner {
+      max-width: 680px; margin: 0 auto;
+    }
+    .how-example {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(200,168,75,0.12);
+      border-radius: 20px; padding: 32px;
+      margin: 40px 0;
+    }
+    .how-row {
+      display: flex; gap: 8px; align-items: center;
+      margin-bottom: 10px;
+    }
+    .how-tile {
+      width: 46px; height: 46px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', cursive; font-size: 22px;
+    }
+    .how-tile.c  { background: linear-gradient(135deg,#B8972A,#E8C84B); color:#0a0e1a; }
+    .how-tile.p  { background: linear-gradient(135deg,#1a5276,#2e86c1); color:#fff; }
+    .how-tile.a  { background: linear-gradient(135deg,#1a1f35,#252d4a); color:#5a6a8a; }
+    .how-tile.em { background: transparent; border: 2px solid #1a2240; color: transparent; }
+    .how-label {
+      font-size: 14px; color: var(--lgray); margin-left: 12px;
+    }
+
+    .legend {
+      display: flex; gap: 20px; flex-wrap: wrap;
+      margin-top: 24px; padding-top: 24px;
+      border-top: 1px solid rgba(200,168,75,0.08);
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: var(--lgray);
+    }
+    .legend-dot {
+      width: 14px; height: 14px; border-radius: 4px;
+    }
+
+    .steps { counter-reset: step; }
+    .step {
+      display: flex; gap: 18px; align-items: flex-start;
+      margin-bottom: 28px;
+    }
+    .step-num {
+      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg,#B8972A,#C8A84B);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', cursive; font-size: 16px; color: #0a0e1a;
+    }
+    .step-text strong { color: var(--white); font-size: 16px; display: block; margin-bottom: 4px; }
+    .step-text span   { color: var(--lgray); font-size: 14px; }
+
+    /* ── SPORTS ── */
+    #sports {
+      padding: 100px 24px;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .sports-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px; margin-top: 48px;
+    }
+    .sport-card {
+      border-radius: 18px; padding: 32px 24px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: transform 0.2s;
+    }
+    .sport-card:hover { transform: translateY(-4px); }
+    .sport-card.football   { background: linear-gradient(135deg,rgba(200,168,75,0.12),rgba(200,168,75,0.04)); border-color: rgba(200,168,75,0.2); }
+    .sport-card.basketball { background: linear-gradient(135deg,rgba(224,120,64,0.12),rgba(224,120,64,0.04)); border-color: rgba(224,120,64,0.2); }
+    .sport-card.baseball   { background: linear-gradient(135deg,rgba(96,165,250,0.12),rgba(96,165,250,0.04)); border-color: rgba(96,165,250,0.2); }
+    .sport-card.hockey     { background: linear-gradient(135deg,rgba(167,139,250,0.12),rgba(167,139,250,0.04)); border-color: rgba(167,139,250,0.2); }
+    .sport-emoji { font-size: 48px; margin-bottom: 14px; display: block; }
+    .sport-name {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 22px; letter-spacing: 2px; margin-bottom: 8px;
+    }
+    .sport-card.football   .sport-name { color: #C8A84B; }
+    .sport-card.basketball .sport-name { color: #E07840; }
+    .sport-card.baseball   .sport-name { color: #60A5FA; }
+    .sport-card.hockey     .sport-name { color: #A78BFA; }
+    .sport-desc { font-size: 13px; color: var(--lgray); }
+    .sport-tag {
+      display: inline-block; margin-top: 12px;
+      padding: 3px 10px; border-radius: 6px;
+      font-size: 10px; font-weight: 700; letter-spacing: 1px;
+      color: #0a0e1a;
+    }
+    .sport-card.football   .sport-tag { background: #C8A84B; }
+    .sport-card.basketball .sport-tag { background: #E07840; }
+    .sport-card.baseball   .sport-tag { background: #60A5FA; }
+    .sport-card.hockey     .sport-tag { background: #A78BFA; }
+
+    /* ── PRICING ── */
+    #pricing {
+      padding: 100px 24px;
+      background: linear-gradient(180deg, transparent, rgba(200,168,75,0.03), transparent);
+    }
+    .pricing-inner {
+      max-width: 760px; margin: 0 auto;
+    }
+    .pricing-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16px; margin-top: 48px;
+    }
+    @media (max-width: 600px) { .pricing-grid { grid-template-columns: 1fr; } }
+    .pricing-card {
+      border-radius: 20px; padding: 32px 28px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      position: relative;
+    }
+    .pricing-card.featured {
+      border-color: var(--gold);
+      background: linear-gradient(135deg,rgba(200,168,75,0.1),rgba(200,168,75,0.04));
+      box-shadow: 0 0 40px rgba(200,168,75,0.1);
+    }
+    .pricing-badge {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(135deg,#B8972A,#E8C84B);
+      color: #0a0e1a; font-size: 11px; font-weight: 700;
+      padding: 4px 14px; border-radius: 20px; letter-spacing: 1px;
+      white-space: nowrap;
+    }
+    .pricing-tier {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 13px; letter-spacing: 3px; color: var(--lgray);
+      margin-bottom: 8px;
+    }
+    .pricing-price {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 52px; color: var(--white); letter-spacing: 1px;
+      line-height: 1;
+    }
+    .pricing-price sup { font-size: 22px; vertical-align: super; }
+    .pricing-period { font-size: 13px; color: var(--lgray); margin-bottom: 6px; }
+    .pricing-trial  { font-size: 12px; color: var(--green); margin-bottom: 24px; }
+    .pricing-features { list-style: none; margin-bottom: 28px; }
+    .pricing-features li {
+      font-size: 14px; color: var(--lgray);
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .pricing-features li:last-child { border-bottom: none; }
+    .pricing-features li .check { color: var(--green); font-size: 12px; }
+    .pricing-features li .cross { color: var(--dgray); font-size: 12px; }
+    .pricing-features li.active { color: var(--white); }
+
+    /* ── PRIVACY POLICY ── */
+    #privacy {
+      padding: 100px 24px;
+      max-width: 760px; margin: 0 auto;
+    }
+    .privacy-updated {
+      font-size: 13px; color: var(--lgray);
+      margin-bottom: 40px;
+    }
+    .privacy-section { margin-bottom: 40px; }
+    .privacy-section h3 {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 20px; letter-spacing: 1px; color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .privacy-section p {
+      font-size: 15px; color: var(--lgray); line-height: 1.75;
+      margin-bottom: 10px;
+    }
+    .privacy-section ul {
+      padding-left: 20px; margin-bottom: 10px;
+    }
+    .privacy-section li {
+      font-size: 15px; color: var(--lgray); line-height: 1.75; margin-bottom: 6px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 48px 24px;
+      border-top: 1px solid rgba(200,168,75,0.08);
+      text-align: center;
+    }
+    .footer-brand {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 28px; letter-spacing: 5px; color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .footer-tagline {
+      font-size: 13px; color: var(--dgray); margin-bottom: 24px;
+    }
+    .footer-links {
+      display: flex; justify-content: center; gap: 24px;
+      list-style: none; margin-bottom: 24px; flex-wrap: wrap;
+    }
+    .footer-links a {
+      font-size: 13px; color: var(--lgray); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-copy {
+      font-size: 12px; color: var(--dgray);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hero-sports span { width: 44px; height: 44px; font-size: 20px; }
+      .tile { width: 42px; height: 42px; font-size: 20px; }
+      .how-tile { width: 38px; height: 38px; font-size: 18px; }
+      .features-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <!-- ── NAVIGATION ── -->
+
+  <nav>
+    <a href="#home" class="nav-brand">FANTLE</a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How to Play</a></li>
+      <li><a href="#sports">Sports</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#privacy">Privacy</a></li>
+      <li><a href="#download" class="nav-cta">Download</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── HERO ── -->
+
+  <section id="home">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+
+```
+  <div class="hero-sports">
+    <span>🏈</span>
+    <span>🏀</span>
+    <span>⚾</span>
+    <span>🏒</span>
+  </div>
+
+  <h1>FANTLE</h1>
+  <p class="hero-sub">The Sports Word Game</p>
+  <p class="hero-desc">
+    Guess the <strong>5-letter sports word</strong> in 6 tries.
+    New puzzles every day across <strong>Football, Basketball,
+    Baseball, and Hockey</strong> — pro and college.
+  </p>
+
+  <div class="hero-tiles">
+    <div class="tile correct">S</div>
+    <div class="tile present">C</div>
+    <div class="tile absent">O</div>
+    <div class="tile t4">R</div>
+    <div class="tile t5">E</div>
+  </div>
+
+  <div class="cta-group">
+    <a href="#download" class="btn-primary">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.4c1.4.07 2.36.73 3.17.78 1.2-.24 2.35-.93 3.63-.84 1.54.12 2.71.73 3.47 1.84-3.17 1.88-2.42 6 .74 7.16-.59 1.58-1.38 3.16-3.01 3.94zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+      Download on App Store
+    </a>
+    <a href="#how" class="btn-secondary">How to Play ↓</a>
+  </div>
+
+  <p style="margin-top:28px;font-size:12px;color:var(--dgray);">
+    Free to play · iOS 16+ · No account required
+  </p>
+
+</div>
+```
+
+  </section>
+
+  <div class="gold-line"></div>
+
+  <!-- ── FEATURES ── -->
+
+  <section id="features">
+    <p class="section-label">FEATURES</p>
+    <h2 class="section-title">BUILT FOR SPORTS FANS</h2>
+    <p class="section-body">Everything a word game needs, tuned for the sports fan who plays every day.</p>
+
+```
+<div class="features-grid">
+  <div class="feature-card">
+    <span class="feature-icon">🗓</span>
+    <p class="feature-title">Daily Challenge</p>
+    <p class="feature-desc">One new puzzle per sport, every single day. Everyone plays the same word — compare your result with friends without spoiling it.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon">⚔️</span>
+    <p class="feature-title">Friend Duels</p>
+    <p class="feature-desc">Challenge anyone to your exact word. Send a link — whoever solves it in fewer guesses wins bragging rights.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon">🤖</span>
+    <p class="feature-title">AI Adaptive Difficulty</p>
+    <p class="feature-desc">Fantle learns your skill level and adjusts automatically. Rookie, Pro, or Legend — you'll always be challenged just right.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon">📤</span>
+    <p class="feature-title">Share Your Score</p>
+    <p class="feature-desc">Copy your colorful emoji grid and post it anywhere. Show off without spoiling the word for anyone who hasn't played yet.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon">📊</span>
+    <p class="feature-title">Stats & Streaks</p>
+    <p class="feature-desc">Track your win rate, average guesses, and current streak. Build your longest streak across all four sports.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon">🏆</span>
+    <p class="feature-title">Weekly Leaderboards</p>
+    <p class="feature-desc">Compete with friends in weekly leagues. Resets every Monday — a fresh shot at the top spot every week.</p>
+  </div>
+</div>
+```
+
+  </section>
+
+  <div class="gold-line"></div>
+
+  <!-- ── HOW TO PLAY ── -->
+
+  <section id="how">
+    <div class="how-inner">
+      <p class="section-label">HOW TO PLAY</p>
+      <h2 class="section-title" style="text-align:center;">SIMPLE TO LEARN</h2>
+      <p class="section-body">If you've played Wordle, you already know how. If not — here's everything you need in 60 seconds.</p>
+
+```
+  <div class="how-example">
+    <p style="font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:3px;color:var(--lgray);margin-bottom:20px;">EXAMPLE GAME — FOOTBALL 🏈</p>
+
+    <div class="how-row">
+      <div class="how-tile a">D</div>
+      <div class="how-tile a">R</div>
+      <div class="how-tile a">I</div>
+      <div class="how-tile c">F</div>
+      <div class="how-tile a">T</div>
+      <span class="how-label">F is in the right spot ✓</span>
+    </div>
+    <div class="how-row">
+      <div class="how-tile a">C</div>
+      <div class="how-tile a">O</div>
+      <div class="how-tile c">F</div>
+      <div class="how-tile p">L</div>
+      <div class="how-tile a">Y</div>
+      <span class="how-label">F confirmed, L is in the word</span>
+    </div>
+    <div class="how-row">
+      <div class="how-tile c">F</div>
+      <div class="how-tile c">L</div>
+      <div class="how-tile c">A</div>
+      <div class="how-tile c">N</div>
+      <div class="how-tile c">K</div>
+      <span class="how-label" style="color:var(--gold);">🎉 FLANK — solved in 3!</span>
+    </div>
+    <div class="how-row">
+      <div class="how-tile em"> </div>
+      <div class="how-tile em"> </div>
+      <div class="how-tile em"> </div>
+      <div class="how-tile em"> </div>
+      <div class="how-tile em"> </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:linear-gradient(135deg,#B8972A,#E8C84B);"></div>
+        Correct spot
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:linear-gradient(135deg,#1a5276,#2e86c1);"></div>
+        Wrong spot
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#252d4a;border:1px solid #3a4a6a;"></div>
+        Not in word
+      </div>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text">
+        <strong>Pick your sport</strong>
+        <span>Choose Football, Basketball, Baseball, or Hockey. Free players get one sport per day.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text">
+        <strong>Guess any 5-letter word</strong>
+        <span>It doesn't have to be sports-related. Any valid word works as a starting guess.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text">
+        <strong>Use the color clues</strong>
+        <span>Gold means right letter, right spot. Blue means right letter, wrong spot. Gray means the letter isn't in the word at all.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-text">
+        <strong>Solve it in 6 tries</strong>
+        <span>Narrow it down and guess the word. Then share your emoji grid and see how your friends did.</span>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+  </section>
+
+  <div class="gold-line"></div>
+
+  <!-- ── SPORTS ── -->
+
+  <section id="sports">
+    <p class="section-label">FOUR SPORTS</p>
+    <h2 class="section-title" style="text-align:center;">PRO & COLLEGE FANS WELCOME</h2>
+    <p class="section-body">Words cover the full world of each sport — not just the professional leagues.</p>
+
+```
+<div class="sports-grid">
+  <div class="sport-card football">
+    <span class="sport-emoji">🏈</span>
+    <p class="sport-name">Football</p>
+    <p class="sport-desc">From BLITZ to CLEAT — covers NFL, college football, and everything in between.</p>
+    <span class="sport-tag">NFL · NCAA</span>
+  </div>
+  <div class="sport-card basketball">
+    <span class="sport-emoji">🏀</span>
+    <p class="sport-name">Basketball</p>
+    <p class="sport-desc">LAYUP, SWISH, ALLEY — test your hoops knowledge across pro and college ball.</p>
+    <span class="sport-tag">NBA · NCAA · WNBA</span>
+  </div>
+  <div class="sport-card baseball">
+    <span class="sport-emoji">⚾</span>
+    <p class="sport-name">Baseball</p>
+    <p class="sport-desc">HOMER, BLOOP, CYCLE — America's pastime has some of the best sports words around.</p>
+    <span class="sport-tag">MLB · College</span>
+  </div>
+  <div class="sport-card hockey">
+    <span class="sport-emoji">🏒</span>
+    <p class="sport-name">Hockey</p>
+    <p class="sport-desc">SNIPE, ICING, BLADE — from the crease to the boards, the toughest tier of all.</p>
+    <span class="sport-tag">NHL · College</span>
+  </div>
+</div>
+```
+
+  </section>
+
+  <div class="gold-line"></div>
+
+  <!-- ── PRICING ── -->
+
+  <section id="pricing">
+    <div class="pricing-inner">
+      <p class="section-label">PRICING</p>
+      <h2 class="section-title" style="text-align:center;">FREE TO PLAY</h2>
+      <p class="section-body">Start free. Upgrade when you want more.</p>
+
+```
+  <div class="pricing-grid">
+
+    <!-- Free -->
+    <div class="pricing-card">
+      <p class="pricing-tier">FREE</p>
+      <p class="pricing-price"><sup>$</sup>0</p>
+      <p class="pricing-period">forever</p>
+      <p class="pricing-trial" style="color:var(--lgray);">No credit card required</p>
+      <ul class="pricing-features">
+        <li class="active"><span class="check">✓</span> 1 sport per day</li>
+        <li class="active"><span class="check">✓</span> Daily challenge</li>
+        <li class="active"><span class="check">✓</span> Friend Duels (limited)</li>
+        <li class="active"><span class="check">✓</span> AI difficulty</li>
+        <li><span class="cross">✕</span> Ads shown</li>
+        <li><span class="cross">✕</span> Other 3 sports locked</li>
+      </ul>
+      <a href="#download" class="btn-secondary" style="width:100%;justify-content:center;">Download Free</a>
+    </div>
+
+    <!-- Pro -->
+    <div class="pricing-card featured">
+      <div class="pricing-badge">BEST VALUE · SAVE 50%</div>
+      <p class="pricing-tier">PRO ANNUAL</p>
+      <p class="pricing-price"><sup>$</sup>29<span style="font-size:28px;">.99</span></p>
+      <p class="pricing-period">per year — just $2.50/mo</p>
+      <p class="pricing-trial">✓ 7-day free trial included</p>
+      <ul class="pricing-features">
+        <li class="active"><span class="check">✓</span> All 4 sports every day</li>
+        <li class="active"><span class="check">✓</span> No ads, ever</li>
+        <li class="active"><span class="check">✓</span> Unlimited Friend Duels</li>
+        <li class="active"><span class="check">✓</span> Weekly leaderboards</li>
+        <li class="active"><span class="check">✓</span> Full stats & streaks</li>
+        <li class="active"><span class="check">✓</span> AI adaptive difficulty</li>
+      </ul>
+      <a href="#download" class="btn-primary" style="width:100%;justify-content:center;">Start Free Trial</a>
+      <p style="font-size:11px;color:var(--dgray);text-align:center;margin-top:10px;">
+        Also available monthly at $4.99/mo. Cancel anytime.
+      </p>
+    </div>
+
+  </div>
+</div>
+```
+
+  </section>
+
+  <div class="gold-line"></div>
+
+  <!-- ── DOWNLOAD ── -->
+
+  <section id="download" style="padding:100px 24px;text-align:center;">
+    <div style="max-width:560px;margin:0 auto;">
+      <p class="section-label">GET THE APP</p>
+      <h2 class="section-title">READY TO PLAY?</h2>
+      <p class="section-body">Free to download. New puzzles every day. Your streak starts now.</p>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:40px;">
+        <a href="#" class="btn-primary" style="font-size:18px;padding:18px 48px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.4c1.4.07 2.36.73 3.17.78 1.2-.24 2.35-.93 3.63-.84 1.54.12 2.71.73 3.47 1.84-3.17 1.88-2.42 6 .74 7.16-.59 1.58-1.38 3.16-3.01 3.94zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+          Download on the App Store
+        </a>
+        <p style="font-size:12px;color:var(--dgray);">iOS 16.0 or later required · iPhone only</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gold-line"></div>
+
+  <!-- ── PRIVACY POLICY ── -->
+
+  <section id="privacy">
+    <p class="section-label">LEGAL</p>
+    <h2 class="section-title">PRIVACY POLICY</h2>
+    <p class="privacy-updated">Last updated: March 2026</p>
+
+```
+<div class="privacy-section">
+  <h3>Overview</h3>
+  <p>Fantle ("we", "us", or "our") is committed to protecting your privacy. This policy explains what information we collect when you use the Fantle app, how we use it, and your choices regarding that information.</p>
+  <p>We believe in collecting as little data as possible. Fantle is a word game — it does not require an account, does not access your contacts, and does not track your location.</p>
+</div>
+
+<div class="privacy-section">
+  <h3>Information We Collect</h3>
+  <p><strong style="color:var(--white);">Game Data</strong><br>
+  Your puzzle results, win/loss record, current streak, and guess history are stored locally on your device using iOS secure storage. This data never leaves your device unless you explicitly share it (for example, by copying your emoji result grid).</p>
+
+  <p><strong style="color:var(--white);">Subscription Data</strong><br>
+  If you subscribe to Fantle Pro, Apple processes your payment entirely. We receive only an anonymous subscription token from Apple to verify your access status. We never see your payment details, credit card number, or billing address.</p>
+
+  <p><strong style="color:var(--white);">Advertising Data (Free Users Only)</strong><br>
+  The free version of Fantle displays advertisements served by a third-party ad network. The ad network may collect anonymous device identifiers and usage signals to show relevant ads. You can limit ad tracking at any time in your iPhone Settings under Privacy & Security > Tracking.</p>
+
+  <p><strong style="color:var(--white);">Friend Duels</strong><br>
+  When you create or accept a Friend Duel, an anonymous session identifier is used to match your result with your friend's result. No personal information — no name, no email, no phone number — is associated with a duel session.</p>
+
+  <p><strong style="color:var(--white);">Analytics</strong><br>
+  We use Firebase Analytics to understand how the app is used in aggregate — for example, which sports are most popular and how many puzzles are played per day. This data is anonymized and cannot be used to identify individual users.</p>
+</div>
+
+<div class="privacy-section">
+  <h3>Information We Do Not Collect</h3>
+  <p>We do not collect, store, or have access to:</p>
+  <ul>
+    <li>Your name, email address, or phone number</li>
+    <li>Your location or GPS data</li>
+    <li>Your contacts or address book</li>
+    <li>Your camera or microphone</li>
+    <li>Your photos or media library</li>
+    <li>Health or fitness data</li>
+    <li>Browsing history outside the app</li>
+  </ul>
+  <p>Fantle does not require account creation of any kind.</p>
+</div>
+
+<div class="privacy-section">
+  <h3>Children's Privacy</h3>
+  <p>Fantle is rated 4+ on the App Store and is appropriate for all ages. We do not knowingly collect personal information from children under the age of 13. The app does not require account creation, does not collect names or email addresses, and does not include social features that expose children to other users.</p>
+  <p>If you believe we have inadvertently collected information from a child under 13, please contact us immediately at the address below and we will delete it promptly.</p>
+</div>
+
+<div class="privacy-section">
+  <h3>Data Retention</h3>
+  <p>Game statistics and progress are stored locally on your device. Deleting the Fantle app removes all locally stored data. Anonymous duel session data stored on our servers is automatically deleted after 30 days.</p>
+</div>
+
+<div class="privacy-section">
+  <h3>Third-Party Services</h3>
+  <p>Fantle uses the following third-party services, each with their own privacy policies:</p>
+  <ul>
+    <li><strong style="color:var(--white);">Firebase (Google)</strong> — Anonymous authentication and analytics. <a href="https://firebase.google.com/support/privacy" style="color:var(--gold);">Firebase Privacy Policy</a></li>
+    <li><strong style="color:var(--white);">RevenueCat</strong> — Subscription management. <a href="https://www.revenuecat.com/privacy" style="color:var(--gold);">RevenueCat Privacy Policy</a></li>
+    <li><strong style="color:var(--white);">Apple App Store</strong> — Payment processing and distribution. <a href="https://www.apple.com/legal/privacy" style="color:var(--gold);">Apple Privacy Policy</a></li>
+  </ul>
+</div>
+
+<div class="privacy-section">
+  <h3>Your Rights</h3>
+  <p>Because Fantle does not collect personal information, there is no personal data profile to access, correct, or delete. Game statistics exist only on your device and can be removed by deleting the app.</p>
+  <p>If you are located in the European Union, you have rights under GDPR. If you are located in California, you have rights under CCPA. As Fantle does not collect personal data, these rights are largely satisfied by design. For any questions, contact us below.</p>
+</div>
+
+<div class="privacy-section">
+  <h3>Changes to This Policy</h3>
+  <p>We may update this privacy policy from time to time. When we do, we will update the "Last updated" date at the top of this page. We encourage you to review this policy periodically. Continued use of Fantle after any changes constitutes your acceptance of the updated policy.</p>
+</div>
+
+<div class="privacy-section">
+  <h3>Contact Us</h3>
+  <p>Questions, concerns, or requests related to this privacy policy can be sent to:</p>
+  <p style="margin-top:12px;padding:16px 20px;background:rgba(200,168,75,0.06);border:1px solid rgba(200,168,75,0.15);border-radius:12px;">
+    <strong style="color:var(--gold);font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:1px;">FANTLE PRIVACY</strong><br>
+    <a href="mailto:privacy@fantle.app" style="color:var(--lgray);text-decoration:none;">privacy@fantle.app</a>
+  </p>
+  <p style="margin-top:12px;font-size:13px;color:var(--dgray);">We aim to respond to all privacy inquiries within 5 business days.</p>
+</div>
+```
+
+  </section>
+
+  <!-- ── FOOTER ── -->
+
+  <footer>
+    <p class="footer-brand">FANTLE</p>
+    <p class="footer-tagline">The Sports Word Game</p>
+    <ul class="footer-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How to Play</a></li>
+      <li><a href="#sports">Sports</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#privacy">Privacy Policy</a></li>
+      <li><a href="mailto:support@fantle.app">Support</a></li>
+    </ul>
+    <p class="footer-copy">© 2026 Fantle. All rights reserved. · fantle.app</p>
+  </footer>
+
+</body>
+</html>
